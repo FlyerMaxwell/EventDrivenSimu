@@ -7,7 +7,7 @@ class Simulation:
     """
     def __init__(self) -> None:
         self.exprStart = 0
-        self.exprEnd = 10
+        self.exprEnd = 20
         self.slotSize = 0.1
         self.clock = self.exprStart
         self.events = []
@@ -19,7 +19,8 @@ class Simulation:
         """
         while self.events:
             event = heapq.heappop(self.events)
-            event.showInfo()
+            # event.showInfo()
+            print(event.timestamp)
             event.consume()
     
     def add_vehicles(self, car):
