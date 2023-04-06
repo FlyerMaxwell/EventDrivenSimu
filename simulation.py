@@ -8,10 +8,12 @@ class Simulation:
     def __init__(self) -> None:
         self.exprStart = 0
         self.exprEnd = 20
-        self.slotSize = 0.1
+        self.slotSize = 0.0005
         self.clock = self.exprStart
         self.events = []
         self.vehicles = []
+
+        self.slotPerFrame = 200
     
     def run(self):
         """
