@@ -1,5 +1,7 @@
 import heapq
 import math
+import random
+
 
 class Vehicle:
     """
@@ -13,12 +15,17 @@ class Vehicle:
         self.commuR = commuR
         self.safeR = safeR   # 单车安全距离
         self.maxSpeed = 2
+        self.role = 'S'
+        self.sensedOHN = ['0']*5
+        self.occupiedSlot = random.randint(1,4)
 
         self.packets = []
         self.traceLoc = []
         self.traceCommR = []
         self.traceSpeed = []
         self.traceSafeR = []
+        self.traceRole = []
+        self.traceSlot = []
         
         
     def addPacket(self, pkt):
@@ -37,6 +44,8 @@ def updateLoc(aSim, car, dt):
     car.traceCommR.append(car.commuR)
     car.traceSpeed.append(car.speed)
     car.traceSafeR.append(car.safeR)
+    car.traceRole.append(car.role)
+    car.traceSlot.append(car.occupiedSlot)
 
 
 
@@ -64,26 +73,34 @@ def makeDecision(aSim, packets,car):
     if car.id == 'v_l': # 前车根据后车的通信情况调整自己的广播半径
         if(len(car.packets)):
             car.commuR = abs(car.packets[-1].data[1] - car.displacement)+0.1
+            car.role = 'H'
+            car.occupiedSlot = 0
             print( " UpCommuR-id=", car.id, ", commuR=", car.commuR)
             print(car.packets[-1].data)
             print(car.displacement)
         else:
             car.commuR = car.safeR+0.1
+            car.role = 'S'
+            car.occupiedSlot = random.randint(1,4)
             print(" UpCommuR-id=", car.id, ", commuR=", car.commuR)
+
 
 
 
     if car.id == 'v_f': # 如果听到了前车
         if(len(car.packets)):
-            
             g = car.packets[-1].data[1] - car.displacement  # prtotype Lidar
             speed_l = car.packets[-1].data[0]
+            car.role = 'T'
             car.commuR = abs(g)+0.1
+            car.occupiedSlot = 5
             print( " UpCommuR-id=", car.id, ", commuR=", car.commuR)
             print(car.packets[-1].data)
             print(car.displacement)
             car.speed = min(car.maxSpeed, car.speed+car.acceleration*aSim.slotSize,-car.acceleration + math.sqrt((car.acceleration*aSim.slotSize)**2 + speed_l**2 + 2*car.acceleration*g) )
         else:
+            car.role = 'S'
+            car.occupiedSlot = random.randint(1,4)
             car.commuR = car.safeR+0.1
             print( " UpCommuR-id=", car.id, ", commuR=", car.commuR)
            
